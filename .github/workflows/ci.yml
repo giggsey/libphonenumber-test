@@ -20,6 +20,7 @@ jobs:
       fail-fast: true
       matrix:
         coverage: [false]
+        dependencies: [highest]
         php-version:
           - "5.3"
           - "5.4"
@@ -30,6 +31,14 @@ jobs:
           - "7.2"
           - "7.3"
           - "7.4"
+          - "8.0"
+        include:
+          - php-version: 5.3
+            dependencies: lowest
+          - php-version: 5.6
+            coverage: true
+          - php-version: 7.4
+            coverage: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -48,17 +57,17 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ matrix.php-version }}-composer-
-      - name: Install Composer dependencies
-        if: "matrix.php-version != '5.3'"
+      - name: Install Composer dependencies (highest)
+        if: "matrix.dependencies == 'highest'"
         run: composer update ${{ env.COMPOSER_FLAGS }}
       - name: Install Composer dependencies (lowest)
-        if: "matrix.php-version == '5.3'"
+        if: "matrix.dependencies == 'lowest'"
         run: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
       - name: Test with phpunit (with coverage)
-        if: contains(["5.6","7.4"], matrix.php-version)
+        if: "matrix.coverage == true"
         run: vendor/bin/phpunit ${{ env.COVERAGE_FLAGS }}
       - name: Test with phpunit (without coverage)
-        if: "!contains(['5.6','7.4'], matrix.php-version)"
+        if: "matrix.coverage == false"
         run: vendor/bin/phpunit
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
