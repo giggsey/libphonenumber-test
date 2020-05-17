@@ -54,5 +54,26 @@ jobs:
       - name: Install Composer dependencies (lowest)
         if: "matrix.php-version == '5.3'"
         run: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
-      - name: Test with phpunit
+      - name: Test with phpunit (with coverage)
+        if: contains(["5.6","7.4"], matrix.php-version)
         run: vendor/bin/phpunit ${{ env.COVERAGE_FLAGS }}
+      - name: Test with phpunit (without coverage)
+        if: "!contains(['5.6','7.4'], matrix.php-version)"
+        run: vendor/bin/phpunit
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: run-${{ matrix.php-version }}
+          parallel: true
+
+  finish:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
+
