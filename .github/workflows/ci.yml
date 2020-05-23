@@ -57,8 +57,8 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ matrix.php-version }}-composer-
-      - name: Composer Diagnose
-        run: composer diagnose
+      - name: Update Composer
+        run: composer self-update
       - name: Install Composer dependencies (highest)
         if: "matrix.dependencies != 'lowest'"
         run: composer update ${{ env.COMPOSER_FLAGS }}
