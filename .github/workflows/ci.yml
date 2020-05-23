@@ -68,3 +68,9 @@ jobs:
       - name: Test with phpunit (without coverage)
         if: "matrix.coverage != 'true'"
         run: vendor/bin/phpunit
+      - name: Downloading scrutinizer ocular.phar
+        if: "matrix.coverage == 'true' && ${{ success() }}"
+        run: wget https://scrutinizer-ci.com/ocular.phar
+      - name: Uploading code coverage to scrutinize
+        if: "matrix.coverage == 'true' && ${{ success() }}"
+        run: php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
