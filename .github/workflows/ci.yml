@@ -78,3 +78,6 @@ jobs:
         run: |
           [[ -f vendor/bin/php-coveralls ]] && COVERALLS_PATH=vendor/bin/php-coveralls || COVERALLS_PATH=vendor/bin/coveralls
           php $COVERALLS_PATH -v --exclude-no-stmt
+        env:
+          COVERALLS_RUN_LOCALLY: 1
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
