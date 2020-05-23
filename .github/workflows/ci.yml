@@ -82,12 +82,22 @@ jobs:
         run: vendor/bin/phpunit
       - name: Upload code coverage to Scrutinize
         if: steps.phpunit-coverage.outcome == 'success'
-        run: wget -q https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: |
+            wget -q https://scrutinizer-ci.com/ocular.phar
+            php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
       - name: Submit Coveralls
         if: steps.phpunit-coverage.outcome == 'success'
-        run: |
-          [[ -f vendor/bin/php-coveralls ]] && COVERALLS_PATH=vendor/bin/php-coveralls || COVERALLS_PATH=vendor/bin/coveralls
-          php $COVERALLS_PATH -v --exclude-no-stmt
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: |
+            [[ -f vendor/bin/php-coveralls ]] && COVERALLS_PATH=vendor/bin/php-coveralls || COVERALLS_PATH=vendor/bin/coveralls
+            php $COVERALLS_PATH -v --exclude-no-stmt
         env:
           COVERALLS_RUN_LOCALLY: 1
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
