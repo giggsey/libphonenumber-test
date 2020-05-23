@@ -57,14 +57,20 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ matrix.php-version }}-composer-
-      - name: Update Composer
-        run: composer self-update
       - name: Install Composer dependencies (highest)
         if: "matrix.dependencies != 'lowest'"
-        run: composer update ${{ env.COMPOSER_FLAGS }}
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: composer update ${{ env.COMPOSER_FLAGS }}
       - name: Install Composer dependencies (lowest)
         if: "matrix.dependencies == 'lowest'"
-        run: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
       - name: Test with phpunit (with coverage)
         id: phpunit-coverage
         if: "matrix.coverage == 'coverage'"
