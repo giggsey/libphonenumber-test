@@ -59,7 +59,7 @@ jobs:
           restore-keys: ${{ matrix.php-version }}-composer-
       - name: Install Composer dependencies (highest)
         if: "matrix.dependencies != 'lowest'"
-        run: composer -v && composer update ${{ env.COMPOSER_FLAGS }}
+        run: composer update ${{ env.COMPOSER_FLAGS }}
       - name: Install Composer dependencies (lowest)
         if: "matrix.dependencies == 'lowest'"
         run: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
