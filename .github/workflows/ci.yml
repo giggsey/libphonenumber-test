@@ -71,5 +71,5 @@ jobs:
         if: "matrix.coverage != 'coverage'"
         run: vendor/bin/phpunit
       - name: Uploading code coverage to scrutinize
-        if: steps.phpunit-coverage.outputs.status == 'success'
+        if: steps.phpunit-coverage.outcome == 'success'
         run: wget -q https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
