@@ -70,6 +70,11 @@ jobs:
       - name: Test with phpunit (without coverage)
         if: "matrix.coverage != 'coverage'"
         run: vendor/bin/phpunit
-      - name: Uploading code coverage to scrutinize
+      - name: Upload code coverage to Scrutinize
         if: steps.phpunit-coverage.outcome == 'success'
         run: wget -q https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
+      - name: Submit Coveralls
+        if: steps.phpunit-coverage.outcome == 'success'
+        run: |
+          [[ -f vendor/bin/php-coveralls ]] && COVERALLS_PATH=vendor/bin/php-coveralls || COVERALLS_PATH=vendor/bin/coveralls
+          php $COVERALLS_PATH -v --exclude-no-stmt
