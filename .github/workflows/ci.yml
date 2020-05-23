@@ -66,14 +66,12 @@ jobs:
         if: "matrix.dependencies == 'lowest'"
         run: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
       - name: Test with phpunit (with coverage)
+        id: phpunit-coverage
         if: "matrix.coverage == 'coverage'"
         run: vendor/bin/phpunit ${{ env.COVERAGE_FLAGS }}
       - name: Test with phpunit (without coverage)
         if: "matrix.coverage != 'coverage'"
         run: vendor/bin/phpunit
-      - name: Downloading scrutinizer ocular.phar
-        if: "matrix.coverage == 'coverage' && ${{ success() }}"
-        run: wget https://scrutinizer-ci.com/ocular.phar
       - name: Uploading code coverage to scrutinize
-        if: "matrix.coverage == 'coverage' && ${{ success() }}"
-        run: php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
+        if: steps.phpunit-coverage.outputs.status == 'success'
+        run: wget -q https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
