@@ -45,6 +45,9 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: mbstring, dom
           coverage: xdebug
+        env:
+          update: true
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Problem Matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
       - name: Get composer cache directory
