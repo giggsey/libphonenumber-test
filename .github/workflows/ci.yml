@@ -33,9 +33,9 @@ jobs:
           - php-version: 5.3
             dependencies: lowest
           - php-version: 5.6
-            coverage: true
+            coverage: coverage
           - php-version: 7.4
-            coverage: true
+            coverage: coverage
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -66,14 +66,14 @@ jobs:
         if: "matrix.dependencies == 'lowest'"
         run: composer update ${{ env.COMPOSER_FLAGS }} --prefer-lowest --prefer-stable
       - name: Test with phpunit (with coverage)
-        if: "matrix.coverage == 'true'"
+        if: "matrix.coverage == 'coverage'"
         run: vendor/bin/phpunit ${{ env.COVERAGE_FLAGS }}
       - name: Test with phpunit (without coverage)
-        if: "matrix.coverage != 'true'"
+        if: "matrix.coverage != 'coverage'"
         run: vendor/bin/phpunit
       - name: Downloading scrutinizer ocular.phar
-        if: "matrix.coverage == 'true' && ${{ success() }}"
+        if: "matrix.coverage == 'coverage' && ${{ success() }}"
         run: wget https://scrutinizer-ci.com/ocular.phar
       - name: Uploading code coverage to scrutinize
-        if: "matrix.coverage == 'true' && ${{ success() }}"
+        if: "matrix.coverage == 'coverage' && ${{ success() }}"
         run: php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
